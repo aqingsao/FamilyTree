@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link rel="stylesheet" href="./stylesheets/ChemDoodleWeb.css" type="text/css">
+    <script type="text/javascript" src="./javascripts/ChemDoodleWeb-libs.js"></script>
+    <!--<script type="text/javascript" src="./javascripts/ChemDoodleWeb-unpacked.js"></script>-->
+    <!--<script type="text/javascript" src="./javascripts/ChemDoodleWeb.js"></script>-->
+    <script type="text/javascript" src="./javascripts/family_tree.js"></script>
+</head>
+<body>
+<SCRIPT>
+    var molecule = new Molecule();
+    molecule.atoms[0] = new Atom('Zhang Da', 0, 0, 0);
+//    molecule.atoms[1] = new Atom('Zhang Er', 0, -1, 0);
+//    molecule.atoms[2] = new Atom('Zhang San', 0, -2, 0);
+//    molecule.atoms[3] = new Atom('Zhang Si', 0, -3, 0);
+
+//    molecule.bonds[0] = new Bond(molecule.atoms[0], molecule.atoms[1], 2);
+//    molecule.bonds[1] = new Bond(molecule.atoms[1], molecule.atoms[2], 2);
+//    molecule.bonds[2] = new Bond(molecule.atoms[2], molecule.atoms[3], 2);
+
+    var canvas = new Canvas3D('doodle1', 350, 250);
+    canvas.loadMolecule(molecule);
+</SCRIPT>
+
+<SCRIPT>
+//    var rotate3D = new RotatorCanvas('rotate3D', 200, 200, true);
+//    rotate3D.specs.atoms_useJMOLColors = true;
+//    rotate3D.specs.atoms_circles_2D = true;
+//    rotate3D.specs.bonds_symmetrical_2D = true;
+//    rotate3D.specs.backgroundColor = '#E4FFC2';
+//    rotate3D.loadMolecule(readMOL("./javascripts/ChemDoodleWeb/molecules/3d.mol"));
+//    rotate3D.startAnimation();
+</SCRIPT>
+</body>
+</html>
