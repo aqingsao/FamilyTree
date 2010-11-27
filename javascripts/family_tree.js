@@ -6,79 +6,22 @@ vec3.angleFrom = function(vec, vec2) {
     return Math.acos(cosine);
 }
 
-// Global canvas properties
-var default_backgroundColor = '#FFFFFF';
-
-//Modifiable canvas properties
-var default_canvas_scale = 1;
-var default_projectionVerticalFieldOfView_3D = 45;
-var default_projectionWidthHeightRatio_3D = 1;
-var default_projectionFrontCulling_3D = .1;
-var default_projectionBackCulling_3D = 10000;
-
-//default atom properties
-var default_atoms_display = true;
-var default_atoms_name_display = true;
-var default_atoms_sphereDiameter_3D = .8;
-var default_atoms_materialShininess_3D = 32;
-
-//default bond properties
-var default_bonds_display = true;
-var default_bonds_cylinderDiameter_3D = .3;
-var default_bonds_materialAmbientColor_3D = '#222222';
-var default_bonds_materialShininess_3D = 32;
-
-
 function VisualSpecifications() {
 
+    this.backgroundColor = '#FFFFFF';
     //canvas properties
-    this.scale = default_canvas_scale;
-    this.projectionVerticalFieldOfView_3D = default_projectionVerticalFieldOfView_3D;
-    this.projectionWidthHeightRatio_3D = default_projectionWidthHeightRatio_3D;
-    this.projectionFrontCulling_3D = default_projectionFrontCulling_3D;
-    this.projectionBackCulling_3D = default_projectionBackCulling_3D;
+    this.scale = 1;
 
     //atom properties
-    this.atoms_display = default_atoms_display;
-    this.atoms_name_display = default_atoms_name_display;
-    this.atoms_sphereDiameter_3D = default_atoms_sphereDiameter_3D;
-    this.atoms_materialShininess_3D = default_atoms_materialShininess_3D;
+    this.atoms_display = true;
+    this.atoms_name_display = true;
+    this.atoms_width = .8;
 
     //bond properties
-    this.bonds_display = default_bonds_display;
-    this.bonds_cylinderDiameter_3D = default_bonds_cylinderDiameter_3D;
-    this.bonds_materialShininess_3D = default_bonds_materialShininess_3D;
+    this.bonds_display = true;
+    this.bonds_width = .3;
 }
 
-VisualSpecifications.prototype.set3DRepresentation = function(representation) {
-    if (representation == 'Ball and Stick') {
-        this.bonds_cylinderDiameter_3D = .3;
-    }
-    else
-    if (representation == 'Stick') {
-        this.bonds_cylinderDiameter_3D = .8;
-        this.bonds_materialShininess_3D = this.atoms_materialShininess_3D;
-    }
-    else
-    if (representation == 'Wireframe') {
-        this.bonds_cylinderDiameter_3D = .05;
-    }
-    else {
-        alert('"' + representation + '" is not recognized. Use one of the following strings:\n\n' +
-                '1. Ball and Stick\n' +
-                '2. van der Waals Spheres\n' +
-                '3. Stick\n' +
-                '4. Wireframe\n');
-    }
-}
-VisualSpecifications.prototype.getFontString = function(size, families) {
-    var sb = [size + 'px '];
-    for (var i = 0, ii = families.length; i < ii; i++) {
-        sb.push((i != 0 ? ',' : '') + families[i]);
-    }
-    ;
-    return sb.join('');
-}
 //
 //  Copyright 2009 iChemLabs, LLC.  All rights reserved.
 //
@@ -153,7 +96,7 @@ var CANVAS_OVER = null;
 var ALT = false;
 var SHIFT = false;
 
-Canvas3D.prototype.loadMolecule = function(molecule) {
+Canvas3D.prototype.loadFamily = function(molecule) {
     this.molecule = molecule;
     this.center();
     this.molecule.check();
@@ -162,18 +105,17 @@ Canvas3D.prototype.loadMolecule = function(molecule) {
     }
     this.repaint();
 }
-Canvas3D.prototype.create = function(id, width, height) {
+Canvas3D.prototype.create = function(id) {
     this.id = id;
-    this.width = width;
-    this.height = height;
-    if (!supports_canvas_text() && $.browser.msie && $.browser.version >= '6') {
-        // Install Google Chrome Frame
-        document.writeln('<div style="border: 1px solid black;" width="' + width + '" height="' + height + '">Your browser does not support Canvas</div>');
+
+    var canvas = document.getElementById(id);
+    if(canvas == null){
+        alert("Canvas is null");
+        return;
     }
-    else {
-        document.writeln('<canvas class="ChemDoodleWebComponent" id="' + id + '" width="' + width + '" height="' + height + '"></canvas>');
-    }
-    this.specs = new VisualSpecifications();
+    this.width = canvas.width;
+    this.height = canvas.height;
+    
     //setup input events
     var me = this;
     //for iPhone OS and Android devices
@@ -369,9 +311,10 @@ Canvas3D.prototype.prehandleMobileEvent = function(e) {
 }
 
 function Canvas3D(id, width, height) {
-    if (id) {
-        this.create(id, width, height);
-    }
+    this.specs = new VisualSpecifications();
+
+    this.create(id, width, height);
+
     this.rotationMatrix = mat4.identity([]);
     this.translationMatrix = mat4.identity([]);
     this.lastPoint = null;
@@ -404,7 +347,7 @@ Canvas3D.prototype.repaint = function() {
 Canvas3D.prototype.center = function() {
     var canvas = document.getElementById(this.id);
     var p = this.molecule.getCenter3D();
-    var center = new Atom('C', 0, 0, 0);
+    var center = new Person('C', 0, 0, 0);
     center.sub3D(p);
     for (var i = 0, ii = this.molecule.people.length; i < ii; i++) {
         this.molecule.people[i].add3D(center);
@@ -431,7 +374,7 @@ Canvas3D.prototype.subCreate = function() {
 }
 Canvas3D.prototype.setupScene = function() {
     //clear the canvas
-    this.gl.clearColor(parseInt(default_backgroundColor.substring(1, 3), 16) / 255.0, parseInt(default_backgroundColor.substring(3, 5), 16) / 255.0, parseInt(default_backgroundColor.substring(5, 7), 16) / 255.0, 1.0);
+    this.gl.clearColor(parseInt(this.specs.backgroundColor.substring(1, 3), 16) / 255.0, parseInt(this.specs.backgroundColor.substring(3, 5), 16) / 255.0, parseInt(this.specs.backgroundColor.substring(5, 7), 16) / 255.0, 1.0);
     this.gl.clearDepth(1.0);
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
@@ -439,19 +382,19 @@ Canvas3D.prototype.setupScene = function() {
     this.gl.sphereBuffer = new Sphere();
     this.gl.sphereBuffer.generate(this.gl, 1, 60, 60);
     this.gl.cylinderBuffer = new Cylinder();
-    this.gl.cylinderBuffer.generate(this.gl, 1, 1, 60);
+    this.gl.cylinderBuffer.generate(this.gl, 0.5, 1, 60);
     //set up lighting
     this.gl.lighting = new Light('#FFFFFF', '#FFFFFF', [-.1, -.1, -1]);
     this.gl.lighting.lightScene(this.gl);
     //set up material
-    this.gl.material = new Material('#000000', "#ff0000", '#555555', this.specs.atoms_materialShininess_3D);
+    this.gl.material = new Material('#000000', "#ff0000", '#555555', 32);
     this.gl.material.setup(this.gl);
     //projection matrix
     //arg1: vertical field of view (degrees)
     //arg2: width to height ratio
     //arg3: front culling
     //arg4: back culling
-    this.gl.projectionMatrix = mat4.perspective(this.specs.projectionVerticalFieldOfView_3D, this.specs.projectionWidthHeightRatio_3D, this.specs.projectionFrontCulling_3D, this.specs.projectionBackCulling_3D);
+    this.gl.projectionMatrix = mat4.perspective(45, 1, .1, 1000);
     //matrix setup functions
     this.gl.setMatrixUniforms = function(pMatrix, mvMatrix) {
         //push the projection matrix to the graphics card
@@ -481,7 +424,6 @@ Canvas3D.prototype.drag = function(e) {
         this.repaint();
     }
     else {
-        var diameter = Math.max(this.width / 4, this.height / 4);
         var difx = e.p.x - this.lastPoint.x;
         var dify = e.p.y - this.lastPoint.y;
         var rotation = mat4.rotate(mat4.identity([]), difx * Math.PI / 180.0, [0, 1, 0]);
@@ -617,7 +559,7 @@ Point.prototype.angle = function(p) {
 //  $Author: kevin $
 //  $LastChangedDate: 2010-08-13 12:12:28 -0400 (Fri, 13 Aug 2010) $
 //
-function Atom(name, x, y, z, sex) {
+function Person(name, x, y, z, sex) {
     this.x = x ? x : 0;
     this.y = y ? y : 0;
     this.z = z ? z : 0;
@@ -634,37 +576,40 @@ function Atom(name, x, y, z, sex) {
     if (sex == 'F') {
         this.color = "#ff0000";
     }
+    else if(sex == 'R'){
+        this.color = "#000000";
+    }
     else {
         this.color = '#00ff00';
     }
     return true;
 }
 
-Atom.prototype = new Point(0, 0);
+Person.prototype = new Point(0, 0);
 
-Atom.prototype.add3D = function(p) {
+Person.prototype.add3D = function(p) {
     this.x += p.x;
     this.y += p.y;
     this.z += p.z;
 }
-Atom.prototype.sub3D = function(p) {
+Person.prototype.sub3D = function(p) {
     this.x -= p.x;
     this.y -= p.y;
     this.z -= p.z;
 }
-Atom.prototype.distance3D = function(p) {
+Person.prototype.distance3D = function(p) {
     return Math.sqrt(Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2) + Math.pow(p.z - this.z, 2));
 }
 
-Atom.prototype.render = function(gl, specs) {
+Person.prototype.render = function(gl, specs) {
     var transform = mat4.translate(gl.modelViewMatrix, [this.x, this.y, this.z], []);
-    var radius = specs.atoms_sphereDiameter_3D / 2;
+    var radius = specs.atoms_width / 2;
     mat4.scale(transform, [radius, radius, radius]);
     //positions
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.sphereBuffer.vertexPositionBuffer);
     gl.vertexAttribPointer(gl.shader.vertexPositionAttribute, gl.sphereBuffer.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
     //colors
-    gl.material.setTempColors(gl, '#000000', this.color, '#555555', specs.atoms_materialShininess_3D);
+    gl.material.setTempColors(gl, '#000000', this.color, '#555555', 32);
     //normals
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.sphereBuffer.vertexNormalBuffer);
     gl.vertexAttribPointer(gl.shader.vertexNormalAttribute, gl.sphereBuffer.vertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -730,9 +675,9 @@ Bond.prototype.render = function(gl, specs) {
     if (height == 0) {
         return false;
     }
-    mat4.scale(transform, [specs.bonds_cylinderDiameter_3D / 2, height, specs.bonds_cylinderDiameter_3D / 2]);
+    mat4.scale(transform, [specs.bonds_width / 2, height, specs.bonds_width / 2]);
     //colors
-    gl.material.setTempColors(gl, '#222222', this.color, '#555555', specs.bonds_materialShininess_3D);
+    gl.material.setTempColors(gl, '#222222', this.color, '#555555', 32);
     //normals
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.cylinderBuffer.vertexNormalBuffer);
     gl.vertexAttribPointer(gl.shader.vertexNormalAttribute, gl.cylinderBuffer.vertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -772,7 +717,7 @@ Family.prototype.render = function(gl, specs) {
 }
 Family.prototype.getCenter3D = function() {
     if (this.people.length == 1) {
-        return new Atom('C', this.people[0].x, this.people[0].y, this.people[0].z);
+        return new Person('C', this.people[0].x, this.people[0].y, this.people[0].z);
     }
     var minX = minY = minZ = Infinity;
     var maxX = maxY = maxZ = -Infinity;
@@ -785,7 +730,7 @@ Family.prototype.getCenter3D = function() {
         maxZ = Math.max(this.people[i].z, maxZ);
     }
     ;
-    return new Atom('C', (maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2);
+    return new Person('C', (maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2);
 }
 Family.prototype.getCenter = function() {
     if (this.people.length == 1) {

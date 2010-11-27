@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link rel="stylesheet" href="./stylesheets/ChemDoodleWeb.css" type="text/css">
+    <script type="text/javascript" src="./javascripts/ChemDoodleWeb-libs.js"></script>
+    <script type="text/javascript" src="./javascripts/family_tree.js"></script>
+    <script type="text/javascript" src="./javascripts/family_tree_lib.js"></script>
+    <script type="text/javascript">
+        function log(msg) {
+            var val = $("#log").val() + "\n";
+            $("#log").val(val + msg);
+        }
+        var xOff = 0;
+        function makeTree(id) {
+            var familyObject = eval('(' + $('#family').val() + ')');
+
+            var family = new Family();
+            xOff = 0;
+            gen(family, null, familyObject, 0, 0);
+
+            var canvas = new Canvas3D(id);
+            canvas.loadFamily(family);
+        }
+
+        function gen(family, parent, child, x, y) {
+            var person = new Person(child.n, x, y, 0, child.s);
+            family.people.push(person);
+            if (parent != null) {
+                family.bonds.push(new Bond(parent, person, 2));
+            }
+
+            log('name=' + child.n + ', x=' + x, + ",y=" +y+",xOff="+xOff);
+            if (child.p) {
+                for (var i = 0; i < child.p.length; i++) {
+                    if(i > 0){
+                        xOff++;
+                    }
+                    gen(family, person, child.p[i], xOff, y - 1);
+                }
+                
+            }
+        }
+    </script>
+</head>
+<body>
+<div>
+    <canvas id="test" height="600" width="800" style="border: 1px solid black; float:left">
+        Your browser does not support canvas.
+    </canvas>
+    <div style="float:left; padding-left:20px; ">
+        <label>Please input family data here:</label>
+        <br/>
+        <textarea rows="30" cols="60" id="family">
+            {n:'Kong', s:'R', p:[{n:'1 1', s:'M', p:[{n:'2 1', s:'M', p:[{n:'3 1'},{n:'3 2', p:[{n:'4 1'}]},{n:'3
+            3'}]}]}, {n:'1 2', s:'F', p:[{n:'2 1'}]}]} </textarea>
+        <br/>
+        <input type="button" value="Generate" onclick="makeTree('test')"/>
+        <br/>
+        <textarea id="log" rows="10" cols="60">
+        </textarea>
+    </div>
+</div>
+</body>
+</html>
