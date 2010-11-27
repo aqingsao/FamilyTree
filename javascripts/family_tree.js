@@ -7,13 +7,10 @@ vec3.angleFrom = function(vec, vec2) {
 }
 
 // Global canvas properties
-var default_backgroundColor = '#000000';
+var default_backgroundColor = '#FFFFFF';
 
 //Modifiable canvas properties
 var default_canvas_scale = 1;
-var default_canvas_rotateAngle = 0;
-var default_bondLength_2D = 20;
-var default_angstromsPerBondLength = 1.25;
 var default_projectionVerticalFieldOfView_3D = 45;
 var default_projectionWidthHeightRatio_3D = 1;
 var default_projectionFrontCulling_3D = .1;
@@ -21,36 +18,14 @@ var default_projectionBackCulling_3D = 10000;
 
 //default atom properties
 var default_atoms_display = true;
-var default_atoms_font_size_2D = 12;
-var default_atoms_font_families_2D = ['Helvetica', 'Arial', 'Dialog'];
-var default_atoms_circles_2D = false;
-var default_atoms_circleDiameter_2D = 10;
-var default_atoms_circleBorderWidth_2D = 1;
-var default_atoms_resolution_3D = 60;
+var default_atoms_name_display = true;
 var default_atoms_sphereDiameter_3D = .8;
-var default_atoms_materialAmbientColor_3D = '#000000';
-var default_atoms_materialSpecularColor_3D = '#555555';
 var default_atoms_materialShininess_3D = 32;
-var default_atoms_displayTerminalCarbonLabels_2D = false;
-var default_atoms_showHiddenCarbons_2D = true;
 
 //default bond properties
 var default_bonds_display = true;
-var default_bonds_width_2D = 1;
-var default_bonds_saturationWidth_2D = .2;
-var default_bonds_ends_2D = 'round';
-var default_bonds_saturationAngle_2D = Math.PI / 3;
-var default_bonds_symmetrical_2D = false;
-var default_bonds_clearOverlaps_2D = false;
-var default_bonds_overlapClearWidth_2D = .5;
-var default_bonds_atomLabelBuffer_2D = .25;
-var default_bonds_wedgeThickness_2D = .22;
-var default_bonds_hashWidth_2D = 1;
-var default_bonds_hashSpacing_2D = 2.5;
-var default_bonds_resolution_3D = 60;
 var default_bonds_cylinderDiameter_3D = .3;
 var default_bonds_materialAmbientColor_3D = '#222222';
-var default_bonds_materialSpecularColor_3D = '#555555';
 var default_bonds_materialShininess_3D = 32;
 
 
@@ -58,9 +33,6 @@ function VisualSpecifications() {
 
     //canvas properties
     this.scale = default_canvas_scale;
-    this.rotateAngle = default_canvas_rotateAngle;
-    this.bondLength = default_bondLength_2D;
-    this.angstromsPerBondLength = default_angstromsPerBondLength;
     this.projectionVerticalFieldOfView_3D = default_projectionVerticalFieldOfView_3D;
     this.projectionWidthHeightRatio_3D = default_projectionWidthHeightRatio_3D;
     this.projectionFrontCulling_3D = default_projectionFrontCulling_3D;
@@ -68,39 +40,13 @@ function VisualSpecifications() {
 
     //atom properties
     this.atoms_display = default_atoms_display;
-    this.atoms_font_size_2D = default_atoms_font_size_2D;
-    this.atoms_font_families_2D = [];
-    for (var i = 0, ii = default_atoms_font_families_2D.length; i < ii; i++) {
-        this.atoms_font_families_2D[i] = default_atoms_font_families_2D[i];
-    }
-    this.atoms_circles_2D = default_atoms_circles_2D;
-    this.atoms_circleDiameter_2D = default_atoms_circleDiameter_2D;
-    this.atoms_circleBorderWidth_2D = default_atoms_circleBorderWidth_2D;
-    this.atoms_resolution_3D = default_atoms_resolution_3D;
+    this.atoms_name_display = default_atoms_name_display;
     this.atoms_sphereDiameter_3D = default_atoms_sphereDiameter_3D;
-    this.atoms_materialAmbientColor_3D = default_atoms_materialAmbientColor_3D;
-    this.atoms_materialSpecularColor_3D = default_atoms_materialSpecularColor_3D;
     this.atoms_materialShininess_3D = default_atoms_materialShininess_3D;
-    this.atoms_displayTerminalCarbonLabels_2D = default_atoms_displayTerminalCarbonLabels_2D;
-    this.atoms_showHiddenCarbons_2D = default_atoms_showHiddenCarbons_2D;
 
     //bond properties
     this.bonds_display = default_bonds_display;
-    this.bonds_width_2D = default_bonds_width_2D;
-    this.bonds_saturationWidth_2D = default_bonds_saturationWidth_2D;
-    this.bonds_ends_2D = default_bonds_ends_2D;
-    this.bonds_saturationAngle_2D = default_bonds_saturationAngle_2D;
-    this.bonds_symmetrical_2D = default_bonds_symmetrical_2D;
-    this.bonds_clearOverlaps_2D = default_bonds_clearOverlaps_2D;
-    this.bonds_overlapClearWidth_2D = default_bonds_overlapClearWidth_2D;
-    this.bonds_atomLabelBuffer_2D = default_bonds_atomLabelBuffer_2D;
-    this.bonds_wedgeThickness_2D = default_bonds_wedgeThickness_2D;
-    this.bonds_hashWidth_2D = default_bonds_hashWidth_2D;
-    this.bonds_hashSpacing_2D = default_bonds_hashSpacing_2D;
-    this.bonds_resolution_3D = default_bonds_resolution_3D;
     this.bonds_cylinderDiameter_3D = default_bonds_cylinderDiameter_3D;
-    this.bonds_materialAmbientColor_3D = default_bonds_materialAmbientColor_3D;
-    this.bonds_materialSpecularColor_3D = default_bonds_materialSpecularColor_3D;
     this.bonds_materialShininess_3D = default_bonds_materialShininess_3D;
 }
 
@@ -111,8 +57,6 @@ VisualSpecifications.prototype.set3DRepresentation = function(representation) {
     else
     if (representation == 'Stick') {
         this.bonds_cylinderDiameter_3D = .8;
-        this.bonds_materialAmbientColor_3D = this.atoms_materialAmbientColor_3D;
-        this.bonds_materialSpecularColor_3D = this.atoms_materialSpecularColor_3D;
         this.bonds_materialShininess_3D = this.atoms_materialShininess_3D;
     }
     else
@@ -209,38 +153,7 @@ var CANVAS_OVER = null;
 var ALT = false;
 var SHIFT = false;
 
-function Canvas() {
-    this.molecule = null;
-    this.emptyMessage = null;
-    this.inGesture = false;
-    return true;
-}
-
-Canvas.prototype.repaint = function() {
-    var canvas = document.getElementById(this.id);
-    if (canvas.getContext) {
-        var ctx = canvas.getContext('2d');
-        ctx.fillStyle = default_backgroundColor;
-        ctx.fillRect(0, 0, this.width, this.height);
-        if (this.molecule != null && this.molecule.atoms.length > 0) {
-            ctx.save();
-            ctx.translate(this.width / 2, this.height / 2);
-            ctx.rotate(this.specs.rotateAngle);
-            ctx.scale(this.specs.scale, this.specs.scale);
-            ctx.translate(-this.width / 2, -this.height / 2);
-            this.molecule.draw(ctx, this.specs);
-            ctx.restore();
-        }
-        else {
-            ctx.fillStyle = '#737683';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.font = '18px Helvetica, Verdana, Arial, Sans-serif';
-            ctx.fillText("Hi, No atoms at all", this.width / 2, this.height / 2);
-        }
-    }
-}
-Canvas.prototype.loadMolecule = function(molecule) {
+Canvas3D.prototype.loadMolecule = function(molecule) {
     this.molecule = molecule;
     this.center();
     this.molecule.check();
@@ -249,22 +162,7 @@ Canvas.prototype.loadMolecule = function(molecule) {
     }
     this.repaint();
 }
-Canvas.prototype.center = function() {
-    var canvas = document.getElementById(this.id);
-    var p = this.molecule.getCenter3D();
-    var center = new Atom('C', this.width / 2, this.height / 2, 0);
-    center.sub3D(p);
-    for (var i = 0, ii = this.molecule.atoms.length; i < ii; i++) {
-        this.molecule.atoms[i].add3D(center);
-    }
-    ;
-    var dim = this.molecule.getDimension();
-    this.specs.scale = 1;
-    if (dim.x > this.width || dim.y > this.height) {
-        this.specs.scale = Math.min(this.width / dim.x, this.height / dim.y) * .85;
-    }
-}
-Canvas.prototype.create = function(id, width, height) {
+Canvas3D.prototype.create = function(id, width, height) {
     this.id = id;
     this.width = width;
     this.height = height;
@@ -454,15 +352,15 @@ Canvas.prototype.create = function(id, width, height) {
         this.subCreate();
     }
 }
-Canvas.prototype.getMolecule = function() {
+Canvas3D.prototype.getMolecule = function() {
     return this.molecule;
 }
-Canvas.prototype.prehandleEvent = function(e) {
+Canvas3D.prototype.prehandleEvent = function(e) {
     e.preventDefault();
     var offset = $('#' + this.id).offset();
     e.p = new Point(e.pageX - offset.left, e.pageY - offset.top);
 }
-Canvas.prototype.prehandleMobileEvent = function(e) {
+Canvas3D.prototype.prehandleMobileEvent = function(e) {
     e.pageX = e.originalEvent.changedTouches[0].pageX;
     e.pageY = e.originalEvent.changedTouches[0].pageY;
     e.preventDefault();
@@ -477,10 +375,11 @@ function Canvas3D(id, width, height) {
     this.rotationMatrix = mat4.identity([]);
     this.translationMatrix = mat4.identity([]);
     this.lastPoint = null;
+    this.molecule = null;
+    this.emptyMessage = null;
+    this.inGesture = false;
     return true;
 }
-
-Canvas3D.prototype = new Canvas();
 
 Canvas3D.prototype.afterLoadMolecule = function() {
     var d = this.molecule.getDimension();
@@ -507,8 +406,8 @@ Canvas3D.prototype.center = function() {
     var p = this.molecule.getCenter3D();
     var center = new Atom('C', 0, 0, 0);
     center.sub3D(p);
-    for (var i = 0, ii = this.molecule.atoms.length; i < ii; i++) {
-        this.molecule.atoms[i].add3D(center);
+    for (var i = 0, ii = this.molecule.people.length; i < ii; i++) {
+        this.molecule.people[i].add3D(center);
     }
     ;
 }
@@ -538,14 +437,14 @@ Canvas3D.prototype.setupScene = function() {
     this.gl.depthFunc(this.gl.LEQUAL);
     //here is the sphere buffer to be drawn, make it once, then scale and translate to draw atoms
     this.gl.sphereBuffer = new Sphere();
-    this.gl.sphereBuffer.generate(this.gl, 1, this.specs.atoms_resolution_3D, this.specs.atoms_resolution_3D);
+    this.gl.sphereBuffer.generate(this.gl, 1, 60, 60);
     this.gl.cylinderBuffer = new Cylinder();
-    this.gl.cylinderBuffer.generate(this.gl, 1, 1, this.specs.bonds_resolution_3D);
+    this.gl.cylinderBuffer.generate(this.gl, 1, 1, 60);
     //set up lighting
     this.gl.lighting = new Light('#FFFFFF', '#FFFFFF', [-.1, -.1, -1]);
     this.gl.lighting.lightScene(this.gl);
     //set up material
-    this.gl.material = new Material(this.specs.atoms_materialAmbientColor_3D, "#ff0000", this.specs.atoms_materialSpecularColor_3D, this.specs.atoms_materialShininess_3D);
+    this.gl.material = new Material('#000000', "#ff0000", '#555555', this.specs.atoms_materialShininess_3D);
     this.gl.material.setup(this.gl);
     //projection matrix
     //arg1: vertical field of view (degrees)
@@ -718,7 +617,7 @@ Point.prototype.angle = function(p) {
 //  $Author: kevin $
 //  $LastChangedDate: 2010-08-13 12:12:28 -0400 (Fri, 13 Aug 2010) $
 //
-function Atom(label, x, y, z, sex) {
+function Atom(name, x, y, z, sex) {
     this.x = x ? x : 0;
     this.y = y ? y : 0;
     this.z = z ? z : 0;
@@ -727,9 +626,8 @@ function Atom(label, x, y, z, sex) {
     this.bondNumber = 0;
     this.angleOfLeastInterference = 0;
     this.isHidden = false;
-    this.label = label ? label.replace(/\s/g, '') : 'C';
+    this.name = name;
     this.isLone = false;
-    this.isHover = false;
     this.isSelected = false;
     this.isOverlap = false;
 
@@ -757,52 +655,7 @@ Atom.prototype.sub3D = function(p) {
 Atom.prototype.distance3D = function(p) {
     return Math.sqrt(Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2) + Math.pow(p.z - this.z, 2));
 }
-Atom.prototype.draw = function(ctx, specs) {
-    var font = specs.getFontString(specs.atoms_font_size_2D, specs.atoms_font_families_2D);
-    ctx.font = font;
-    ctx.fillStyle = this.color;
-    if (this.isLone || specs.atoms_circles_2D) {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, specs.atoms_circleDiameter_2D / 2, 0, Math.PI * 2, false);
-        ctx.fill();
-        if (specs.atoms_circleBorderWidth_2D > 0) {
-            ctx.lineWidth = specs.atoms_circleBorderWidth_2D;
-            ctx.strokeStyle = 'black';
-            ctx.stroke(this.x, this.y, 0, Math.PI * 2, specs.atoms_circleDiameter_2D / 2);
-        }
-    }
-    else
-    if (this.isLabelVisible(specs)) {
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(this.label, this.x, this.y);
-    }
-    if (this.charge != null && this.charge != 0) {
-        var s = this.charge.toFixed(0);
-        if (s == '1') {
-            s = '+';
-        }
-        else
-        if (s == '-1') {
-            s = '\u2013';
-        }
-        else
-        if (s.startsWith('-')) {
-            s = s.substring(1) + '\u2013';
-        }
-        else {
-            s += '+';
-        }
-        ctx.fillText(s, this.x + specs.atoms_font_size_2D * Math.cos(this.angleOfLeastInterference + Math.PI / 4), this.y - specs.atoms_font_size_2D * Math.sin(this.angleOfLeastInterference + Math.PI / 4));
-    }
-    if (this.isHover || this.isSelected || this.isOverlap) {
-        ctx.strokeStyle = this.isHover ? '#885110' : '#0060B2';
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 7, 0, Math.PI * 2, false);
-        ctx.stroke();
-    }
-}
+
 Atom.prototype.render = function(gl, specs) {
     var transform = mat4.translate(gl.modelViewMatrix, [this.x, this.y, this.z], []);
     var radius = specs.atoms_sphereDiameter_3D / 2;
@@ -811,7 +664,7 @@ Atom.prototype.render = function(gl, specs) {
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.sphereBuffer.vertexPositionBuffer);
     gl.vertexAttribPointer(gl.shader.vertexPositionAttribute, gl.sphereBuffer.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
     //colors
-    gl.material.setTempColors(gl, specs.atoms_materialAmbientColor_3D, this.color, specs.atoms_materialSpecularColor_3D, specs.atoms_materialShininess_3D);
+    gl.material.setTempColors(gl, '#000000', this.color, '#555555', specs.atoms_materialShininess_3D);
     //normals
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.sphereBuffer.vertexNormalBuffer);
     gl.vertexAttribPointer(gl.shader.vertexNormalAttribute, gl.sphereBuffer.vertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -819,9 +672,8 @@ Atom.prototype.render = function(gl, specs) {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.sphereBuffer.vertexIndexBuffer);
     gl.setMatrixUniforms(gl.projectionMatrix, transform);
     gl.drawElements(gl.TRIANGLES, gl.sphereBuffer.vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-}
-Atom.prototype.isLabelVisible = function(specs) {
-    return this.label != 'C' || (this.isHidden && specs.atoms_showHiddenCarbons_2D) || (specs.atoms_displayTerminalCarbonLabels_2D && this.bondNumber == 1);
+
+
 }
 //
 //  Copyright 2009 iChemLabs, LLC.  All rights reserved.
@@ -831,17 +683,10 @@ Atom.prototype.isLabelVisible = function(specs) {
 //  $LastChangedDate: 2010-08-13 12:12:28 -0400 (Fri, 13 Aug 2010) $
 //
 
-var BOND_STEREO_NONE = 'BOND_STEREO_NONE';
-var BOND_STEREO_PROTRUDING = 'BOND_STEREO_PROTRUDING';
-var BOND_STEREO_RECESSED = 'BOND_STEREO_RECESSED';
-var BOND_STEREO_AMBIGUOUS = 'BOND_STEREO_AMBIGUOUS';
-
 function Bond(a1, a2, bondOrder) {
     this.a1 = a1;
     this.a2 = a2;
     this.bondOrder = bondOrder ? bondOrder : 1;
-    this.stereo = BOND_STEREO_NONE;
-    this.isHover = false;
     this.color = "#0000ff";
     return true;
 }
@@ -868,179 +713,6 @@ Bond.prototype.getNeighbor = function(a) {
     }
     return null;
 }
-Bond.prototype.draw = function(ctx, specs) {
-    var x1 = this.a1.x;
-    var x2 = this.a2.x;
-    var y1 = this.a1.y;
-    var y2 = this.a2.y;
-    var difX = x2 - x1;
-    var difY = y2 - y1;
-    if (specs.atoms_display && !specs.atoms_circles_2D && this.a1.isLabelVisible(specs)) {
-        x1 += difX * specs.bonds_atomLabelBuffer_2D;
-        y1 += difY * specs.bonds_atomLabelBuffer_2D;
-    }
-    if (specs.atoms_display && !specs.atoms_circles_2D && this.a2.isLabelVisible(specs)) {
-        x2 -= difX * specs.bonds_atomLabelBuffer_2D;
-        y2 -= difY * specs.bonds_atomLabelBuffer_2D;
-    }
-    if (specs.bonds_clearOverlaps_2D) {
-        var xs = x1 + difX * .15;
-        var ys = y1 + difY * .15;
-        var xf = x2 - difX * .15;
-        var yf = y2 - difY * .15;
-        ctx.strokeStyle = default_backgroundColor;
-        ctx.lineWidth = specs.bonds_width_2D + specs.bonds_overlapClearWidth_2D * 2;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(xs, ys);
-        ctx.lineTo(xf, yf);
-        ctx.closePath();
-        ctx.stroke();
-    }
-    ctx.strokeStyle = this.color;
-    ctx.fillStyle = this.color;
-    ctx.lineWidth = specs.bonds_width_2D;
-    ctx.lineCap = specs.bonds_ends_2D;
-
-    switch (this.bondOrder) {
-        case 1:
-            if (this.stereo == BOND_STEREO_PROTRUDING || this.stereo == BOND_STEREO_RECESSED) {
-                var useDist = this.a1.distance(this.a2) * specs.bonds_wedgeThickness_2D / 2;
-                var perpendicular = this.a1.angle(this.a2) + Math.PI / 2;
-                var cx3 = x2 + Math.cos(perpendicular) * useDist;
-                var cy3 = y2 - Math.sin(perpendicular) * useDist;
-                var cx4 = x2 - Math.cos(perpendicular) * useDist;
-                var cy4 = y2 + Math.sin(perpendicular) * useDist;
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(cx3, cy3);
-                ctx.lineTo(cx4, cy4);
-                ctx.closePath();
-                if (this.stereo == BOND_STEREO_PROTRUDING) {
-                    ctx.fill();
-                }
-                else {
-                    ctx.save();
-                    ctx.clip();
-                    ctx.beginPath();
-                    ctx.moveTo(x1, y1);
-                    ctx.lineWidth = useDist * 2;
-                    ctx.lineCap = 'butt';
-                    var travelled = 0;
-                    var dist = this.a1.distance(this.a2);
-                    var space = false;
-                    var lastX = x1;
-                    var lastY = y1;
-                    while (travelled < dist) {
-                        if (space) {
-                            var percent = specs.bonds_hashSpacing_2D / dist;
-                            lastX += percent * difX;
-                            lastY += percent * difY;
-                            ctx.moveTo(lastX, lastY);
-                            travelled += specs.bonds_hashSpacing_2D;
-                        }
-                        else {
-                            var percent = specs.bonds_hashWidth_2D / dist;
-                            lastX += percent * difX;
-                            lastY += percent * difY;
-                            ctx.lineTo(lastX, lastY);
-                            travelled += specs.bonds_hashWidth_2D;
-                        }
-                        space = !space;
-                    }
-                    ctx.stroke();
-                    ctx.restore();
-                }
-            }
-            else {
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.stroke();
-            }
-            break;
-        case 1.5:
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-            break;
-        case 2:
-            if (this.stereo == BOND_STEREO_AMBIGUOUS) {
-                var useDist = this.a1.distance(this.a2) * specs.bonds_saturationWidth_2D / 2;
-                var perpendicular = this.a1.angle(this.a2) + Math.PI / 2;
-                var cx1 = x1 - Math.cos(perpendicular) * useDist;
-                var cy1 = y1 + Math.sin(perpendicular) * useDist;
-                var cx2 = x1 + Math.cos(perpendicular) * useDist;
-                var cy2 = y1 - Math.sin(perpendicular) * useDist;
-                var cx3 = x2 + Math.cos(perpendicular) * useDist;
-                var cy3 = y2 - Math.sin(perpendicular) * useDist;
-                var cx4 = x2 - Math.cos(perpendicular) * useDist;
-                var cy4 = y2 + Math.sin(perpendicular) * useDist;
-                ctx.beginPath();
-                ctx.moveTo(cx1, cy1);
-                ctx.lineTo(cx3, cy3);
-                ctx.moveTo(cx2, cy2);
-                ctx.lineTo(cx4, cy4);
-                ctx.stroke();
-            }
-            else {
-                var useDist = this.a1.distance(this.a2) * specs.bonds_saturationWidth_2D / 2;
-                var perpendicular = this.a1.angle(this.a2) + Math.PI / 2;
-                var cx1 = x1 - Math.cos(perpendicular) * useDist;
-                var cy1 = y1 + Math.sin(perpendicular) * useDist;
-                var cx2 = x1 + Math.cos(perpendicular) * useDist;
-                var cy2 = y1 - Math.sin(perpendicular) * useDist;
-                var cx3 = x2 + Math.cos(perpendicular) * useDist;
-                var cy3 = y2 - Math.sin(perpendicular) * useDist;
-                var cx4 = x2 - Math.cos(perpendicular) * useDist;
-                var cy4 = y2 + Math.sin(perpendicular) * useDist;
-                ctx.beginPath();
-                ctx.moveTo(cx1, cy1);
-                ctx.lineTo(cx4, cy4);
-                ctx.moveTo(cx2, cy2);
-                ctx.lineTo(cx3, cy3);
-                ctx.stroke();
-            }
-            break;
-        case 3:
-            var useDist = this.a1.distance(this.a2) * specs.bonds_saturationWidth_2D;
-            var perpendicular = this.a1.angle(this.a2) + Math.PI / 2;
-            var cx1 = x1 - Math.cos(perpendicular) * useDist;
-            var cy1 = y1 + Math.sin(perpendicular) * useDist;
-            var cx2 = x1 + Math.cos(perpendicular) * useDist;
-            var cy2 = y1 - Math.sin(perpendicular) * useDist;
-            var cx3 = x2 + Math.cos(perpendicular) * useDist;
-            var cy3 = y2 - Math.sin(perpendicular) * useDist;
-            var cx4 = x2 - Math.cos(perpendicular) * useDist;
-            var cy4 = y2 + Math.sin(perpendicular) * useDist;
-            ctx.beginPath();
-            ctx.moveTo(cx1, cy1);
-            ctx.lineTo(cx4, cy4);
-            ctx.moveTo(cx2, cy2);
-            ctx.lineTo(cx3, cy3);
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-            break;
-    }
-    if (this.isHover) {
-        var pi2 = 2 * Math.PI;
-        var angle = (this.a1.angleForStupidCanvasArcs(this.a2) + Math.PI / 2) % pi2;
-        ctx.strokeStyle = '#885110';
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        var angleTo = (angle + Math.PI) % pi2;
-        angleTo = angleTo % (Math.PI * 2);
-        ctx.arc(this.a1.x, this.a1.y, 6, angle, angleTo, false);
-        ctx.stroke();
-        ctx.beginPath();
-        angle += Math.PI;
-        angleTo = (angle + Math.PI) % pi2;
-        ctx.arc(this.a2.x, this.a2.y, 7, angle, angleTo, false);
-        ctx.stroke();
-    }
-}
 Bond.prototype.render = function(gl, specs) {
     var transform = mat4.translate(gl.modelViewMatrix, [this.a1.x, this.a1.y, this.a1.z], []);
     //align bond
@@ -1060,7 +732,7 @@ Bond.prototype.render = function(gl, specs) {
     }
     mat4.scale(transform, [specs.bonds_cylinderDiameter_3D / 2, height, specs.bonds_cylinderDiameter_3D / 2]);
     //colors
-    gl.material.setTempColors(gl, specs.bonds_materialAmbientColor_3D, this.color, specs.bonds_materialSpecularColor_3D, specs.bonds_materialShininess_3D);
+    gl.material.setTempColors(gl, '#222222', this.color, '#555555', specs.bonds_materialShininess_3D);
     //normals
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.cylinderBuffer.vertexNormalBuffer);
     gl.vertexAttribPointer(gl.shader.vertexNormalAttribute, gl.cylinderBuffer.vertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -1078,29 +750,13 @@ Bond.prototype.render = function(gl, specs) {
 //  $Author: kevin $
 //  $LastChangedDate: 2010-08-12 16:48:33 -0400 (Thu, 12 Aug 2010) $
 //
-function Molecule() {
-    this.atoms = [];
+function Family() {
+    this.people = [];
     this.bonds = [];
-    this.rings = [];
     return true;
 }
 
-Molecule.prototype.draw = function(ctx, specs) {
-    //draw
-    if (specs.bonds_display == true) {
-        for (var i = 0, ii = this.bonds.length; i < ii; i++) {
-            this.bonds[i].draw(ctx, specs);
-        }
-        ;
-    }
-    if (specs.atoms_display == true) {
-        for (var i = 0, ii = this.atoms.length; i < ii; i++) {
-            this.atoms[i].draw(ctx, specs);
-        }
-        ;
-    }
-}
-Molecule.prototype.render = function(gl, specs) {
+Family.prototype.render = function(gl, specs) {
     if (specs.bonds_display == true) {
         for (var i = 0, ii = this.bonds.length; i < ii; i++) {
             this.bonds[i].render(gl, specs);
@@ -1108,73 +764,73 @@ Molecule.prototype.render = function(gl, specs) {
         ;
     }
     if (specs.atoms_display == true) {
-        for (var i = 0, ii = this.atoms.length; i < ii; i++) {
-            this.atoms[i].render(gl, specs);
+        for (var i = 0, ii = this.people.length; i < ii; i++) {
+            this.people[i].render(gl, specs);
         }
         ;
     }
 }
-Molecule.prototype.getCenter3D = function() {
-    if (this.atoms.length == 1) {
-        return new Atom('C', this.atoms[0].x, this.atoms[0].y, this.atoms[0].z);
+Family.prototype.getCenter3D = function() {
+    if (this.people.length == 1) {
+        return new Atom('C', this.people[0].x, this.people[0].y, this.people[0].z);
     }
     var minX = minY = minZ = Infinity;
     var maxX = maxY = maxZ = -Infinity;
-    for (var i = 0, ii = this.atoms.length; i < ii; i++) {
-        minX = Math.min(this.atoms[i].x, minX);
-        minY = Math.min(this.atoms[i].y, minY);
-        minZ = Math.min(this.atoms[i].z, minZ);
-        maxX = Math.max(this.atoms[i].x, maxX);
-        maxY = Math.max(this.atoms[i].y, maxY);
-        maxZ = Math.max(this.atoms[i].z, maxZ);
+    for (var i = 0, ii = this.people.length; i < ii; i++) {
+        minX = Math.min(this.people[i].x, minX);
+        minY = Math.min(this.people[i].y, minY);
+        minZ = Math.min(this.people[i].z, minZ);
+        maxX = Math.max(this.people[i].x, maxX);
+        maxY = Math.max(this.people[i].y, maxY);
+        maxZ = Math.max(this.people[i].z, maxZ);
     }
     ;
     return new Atom('C', (maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2);
 }
-Molecule.prototype.getCenter = function() {
-    if (this.atoms.length == 1) {
-        return new Point(this.atoms[0].x, this.atoms[0].y);
+Family.prototype.getCenter = function() {
+    if (this.people.length == 1) {
+        return new Point(this.people[0].x, this.people[0].y);
     }
     var minX = minY = Infinity;
     var maxX = maxY = -Infinity;
-    for (var i = 0, ii = this.atoms.length; i < ii; i++) {
-        minX = Math.min(this.atoms[i].x, minX);
-        minY = Math.min(this.atoms[i].y, minY);
-        maxX = Math.max(this.atoms[i].x, maxX);
-        maxY = Math.max(this.atoms[i].y, maxY);
+    for (var i = 0, ii = this.people.length; i < ii; i++) {
+        minX = Math.min(this.people[i].x, minX);
+        minY = Math.min(this.people[i].y, minY);
+        maxX = Math.max(this.people[i].x, maxX);
+        maxY = Math.max(this.people[i].y, maxY);
     }
     ;
     return new Point((maxX + minX) / 2, (maxY + minY) / 2);
 }
-Molecule.prototype.getDimension = function() {
-    if (this.atoms.length == 1) {
+Family.prototype.getDimension = function() {
+    if (this.people.length == 1) {
         return new Point(0, 0);
     }
     var minX = minY = Infinity;
     var maxX = maxY = -Infinity;
-    for (var i = 0, ii = this.atoms.length; i < ii; i++) {
-        minX = Math.min(this.atoms[i].x, minX);
-        minY = Math.min(this.atoms[i].y, minY);
-        maxX = Math.max(this.atoms[i].x, maxX);
-        maxY = Math.max(this.atoms[i].y, maxY);
+    for (var i = 0, ii = this.people.length; i < ii; i++) {
+        minX = Math.min(this.people[i].x, minX);
+        minY = Math.min(this.people[i].y, minY);
+        maxX = Math.max(this.people[i].x, maxX);
+        maxY = Math.max(this.people[i].y, maxY);
     }
     ;
     return new Point(maxX - minX, maxY - minY);
 }
-Molecule.prototype.check = function() {
+Family.prototype.check = function() {
     //find lones
-    for (var i = 0, ii = this.atoms.length; i < ii; i++) {
-        this.atoms[i].isLone = false;
-        if (this.atoms[i].label == 'C') {
+    for (var i = 0, ii = this.people.length; i < ii; i++) {
+        this.people[i].isLone = false;
+        if (this.people[i].name == 'C') {
             var counter = 0;
             for (var j = 0, jj = this.bonds.length; j < jj; j++) {
-                if (this.bonds[j].a1 == this.atoms[i] || this.bonds[j].a2 == this.atoms[i]) {
+                if (this.bonds[j].a1 == this.people[i] || this.bonds[j].a2 == this.people[i]) {
                     counter++;
                 }
             }
             ;
             if (counter == 0) {
-                this.atoms[i].isLone = true;
+                this.people[i].isLone = true;
             }
         }
     }
@@ -1184,7 +840,7 @@ Molecule.prototype.check = function() {
     //setup metadata
     this.setupMetaData();
 }
-Molecule.prototype.getAngles = function(a) {
+Family.prototype.getAngles = function(a) {
     var angles = [];
     for (var i = 0, ii = this.bonds.length; i < ii; i++) {
         if (this.bonds[i].contains(a)) {
@@ -1195,7 +851,7 @@ Molecule.prototype.getAngles = function(a) {
     angles.sort();
     return angles;
 }
-Molecule.prototype.getCoordinationNumber = function(bs) {
+Family.prototype.getCoordinationNumber = function(bs) {
     var coordinationNumber = 0;
     for (var i = 0, ii = bs.length; i < ii; i++) {
         coordinationNumber += bs[i].bondOrder;
@@ -1203,7 +859,7 @@ Molecule.prototype.getCoordinationNumber = function(bs) {
     ;
     return coordinationNumber;
 }
-Molecule.prototype.getBonds = function(a) {
+Family.prototype.getBonds = function(a) {
     var bonds = [];
     for (var i = 0, ii = this.bonds.length; i < ii; i++) {
         if (this.bonds[i].contains(a)) {
@@ -1213,18 +869,18 @@ Molecule.prototype.getBonds = function(a) {
     ;
     return bonds;
 }
-Molecule.prototype.sortAtomsByZ = function() {
-    for (var i = 1, ii = this.atoms.length; i < ii; i++) {
+Family.prototype.sortAtomsByZ = function() {
+    for (var i = 1, ii = this.people.length; i < ii; i++) {
         var index = i;
-        while (index > 0 && this.atoms[index].z < this.atoms[index - 1].z) {
-            var hold = this.atoms[index];
-            this.atoms[index] = this.atoms[index - 1];
-            this.atoms[index - 1] = hold;
+        while (index > 0 && this.people[index].z < this.people[index - 1].z) {
+            var hold = this.people[index];
+            this.people[index] = this.people[index - 1];
+            this.people[index - 1] = hold;
             index--;
         }
     }
 }
-Molecule.prototype.sortBondsByZ = function() {
+Family.prototype.sortBondsByZ = function() {
     for (var i = 1, ii = this.bonds.length; i < ii; i++) {
         var index = i;
         while (index > 0 && (this.bonds[index].a1.z + this.bonds[index].a2.z) < (this.bonds[index - 1].a1.z + this.bonds[index - 1].a2.z)) {
@@ -1235,9 +891,9 @@ Molecule.prototype.sortBondsByZ = function() {
         }
     }
 }
-Molecule.prototype.setupMetaData = function() {
-    for (var i = 0, ii = this.atoms.length; i < ii; i++) {
-        var a = this.atoms[i];
+Family.prototype.setupMetaData = function() {
+    for (var i = 0, ii = this.people.length; i < ii; i++) {
+        var a = this.people[i];
         var bonds = this.getBonds(a);
         var angles = this.getAngles(a);
         a.isHidden = bonds.length == 2 && Math.abs(Math.abs(angles[1] - angles[0]) - Math.PI) < Math.PI / 30 && bonds[0].bondOrder == bonds[1].bondOrder;
@@ -1247,18 +903,18 @@ Molecule.prototype.setupMetaData = function() {
     }
     ;
 }
-Molecule.prototype.scaleToAverageBondLength = function(length) {
+Family.prototype.scaleToAverageBondLength = function(length) {
     var avBondLength = this.getAverageBondLength();
     if (avBondLength != 0) {
         var scale = length / avBondLength;
-        for (var i = 0, ii = this.atoms.length; i < ii; i++) {
-            this.atoms[i].x *= scale;
-            this.atoms[i].y *= scale;
+        for (var i = 0, ii = this.people.length; i < ii; i++) {
+            this.people[i].x *= scale;
+            this.people[i].y *= scale;
         }
         ;
     }
 }
-Molecule.prototype.getAverageBondLength = function() {
+Family.prototype.getAverageBondLength = function() {
     if (this.bonds.length == 0) {
         return 0;
     }
@@ -1615,16 +1271,6 @@ Sphere.prototype.generate = function(gl, radius, latitudeBands, longitudeBands) 
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData), gl.STREAM_DRAW);
     this.vertexIndexBuffer.itemSize = 1;
     this.vertexIndexBuffer.numItems = indexData.length;
-}
-
-function fit(data, length) {
-    var size = data.length;
-    var padding = '';
-    for (var i = 0; i < length - size; i++) {
-        padding = padding + ' ';
-    }
-    ;
-    return padding + data;
 }
 
 //
