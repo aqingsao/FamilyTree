@@ -559,7 +559,7 @@ Point.prototype.angle = function(p) {
 //  $Author: kevin $
 //  $LastChangedDate: 2010-08-13 12:12:28 -0400 (Fri, 13 Aug 2010) $
 //
-function Person(name, x, y, z, sex) {
+function Person(name, x, y, z, type) {
     this.x = x ? x : 0;
     this.y = y ? y : 0;
     this.z = z ? z : 0;
@@ -573,11 +573,14 @@ function Person(name, x, y, z, sex) {
     this.isSelected = false;
     this.isOverlap = false;
 
-    if (sex == 'F') {
+    if (type == 'F') {
         this.color = "#ff0000";
     }
-    else if(sex == 'R'){
+    else if(type == 'R'){
         this.color = "#000000";
+    }
+    else if(type == 'spouse'){
+        this.color = "#888888";
     }
     else {
         this.color = '#00ff00';
@@ -628,10 +631,19 @@ Person.prototype.render = function(gl, specs) {
 //  $LastChangedDate: 2010-08-13 12:12:28 -0400 (Fri, 13 Aug 2010) $
 //
 
-function Bond(a1, a2, bondOrder) {
+function Bond(a1, a2, bondOrder, relation) {
     this.a1 = a1;
     this.a2 = a2;
     this.bondOrder = bondOrder ? bondOrder : 1;
+    if(relation == 'child'){
+
+    }
+    else if(relation == 'sibling'){
+
+    }
+    else if (relation = 'wife'){
+
+    }
     this.color = "#0000ff";
     return true;
 }

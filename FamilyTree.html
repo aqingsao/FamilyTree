@@ -13,6 +13,15 @@
             var val = $("#log").val() + "\n";
             $("#log").val(val + msg);
         }
+        function getSpouseSex(s) {
+            if (s == 'F') {
+                return 'M';
+            }
+            else if (s == 'M') {
+                return 'F';
+            }
+            return null;
+        }
         var xOff = 0;
         function makeTree(id) {
             var familyObject = eval('(' + $('#family').val() + ')');
@@ -29,32 +38,42 @@
             var person = new Person(child.n, x, y, 0, child.s);
             family.people.push(person);
             if (parent != null) {
-                family.bonds.push(new Bond(parent, person, 2));
+                family.bonds.push(new Bond(parent, person, 2, 'child'));
+            }
+            if ($("#showSpouse").is(':checked') && child.spouse) {
+                var spouse = new Person(child.spouse.n, x, y, -1, 'spouse');
+                family.people.push(spouse);
+                family.bonds.push(new Bond(person, spouse, 2, 'spouse'));
             }
 
-            log('name=' + child.n + ', x=' + x, + ",y=" +y+",xOff="+xOff);
+            log('name=' + child.n + ', x=' + x, + ",y=" + y + ",xOff=" + xOff);
             if (child.p) {
                 for (var i = 0; i < child.p.length; i++) {
-                    if(i > 0){
+                    if (i > 0) {
                         xOff++;
                     }
                     gen(family, person, child.p[i], xOff, y - 1);
                 }
-                
+
             }
         }
     </script>
 </head>
 <body>
 <div>
-    <canvas id="test" height="600" width="800" style="border: 1px solid black; float:left">
-        Your browser does not support canvas.
-    </canvas>
+    <div style="float: left;">
+        <canvas id="test" height="600" width="800" style="border: 1px solid black">
+            Your browser does not support canvas.
+        </canvas>
+        <br/>
+        <input type="checkbox" id="showSibling" name="showSibling" onclick="makeTree('test')"/>Show Sibling
+        <input type="checkbox" id="showSpouse" name="showSpouse" onclick="makeTree('test')"/>Show Spouse
+    </div>
     <div style="float:left; padding-left:20px; ">
         <label>Please input family data here:</label>
         <br/>
         <textarea rows="30" cols="60" id="family">
-            {n:'Kong', s:'R', p:[{n:'1 1', s:'M', p:[{n:'2 1', s:'M', p:[{n:'3 1'},{n:'3 2', p:[{n:'4 1'}]},{n:'3
+            {n:'Kong', s:'R', p:[{n:'1 1', s:'M', spouse:{n:'Wife'},p:[{n:'2 1', s:'M', p:[{n:'3 1'},{n:'3 2', p:[{n:'4 1'}]},{n:'3
             3'}]}]}, {n:'1 2', s:'F', p:[{n:'2 1'}]}]} </textarea>
         <br/>
         <input type="button" value="Generate" onclick="makeTree('test')"/>
