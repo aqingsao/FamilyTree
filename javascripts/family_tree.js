@@ -20,6 +20,8 @@ function VisualSpecifications() {
     //bond properties
     this.bonds_display = true;
     this.bonds_width = .3;
+
+    this.bondLength = 20;
 }
 
 //
@@ -96,14 +98,27 @@ var CANVAS_OVER = null;
 var ALT = false;
 var SHIFT = false;
 
-Canvas3D.prototype.loadFamily = function(molecule) {
-    this.molecule = molecule;
+Canvas3D.prototype.loadFamily = function(family) {
+    this.family = family;
     this.center();
-    this.molecule.check();
     if (this.afterLoadMolecule) {
         this.afterLoadMolecule();
     }
     this.repaint();
+}
+Canvas3D.prototype.click = function(e){
+    log("click at " + e.p.x+","+e.p.y);
+
+    for (var i = 0, ii = this.family.people.length; i < ii; i++) {
+        this.family.people[i].isHover = false;
+        var dist = e.p.distance(this.family.people[i]);
+        if (dist < this.specs.bondLength && dist < min) {
+            min = dist;
+            hovering = this.family.people[i];
+        }
+    }
+
+    this.repaint(e);
 }
 Canvas3D.prototype.create = function(id) {
     this.id = id;
@@ -118,69 +133,6 @@ Canvas3D.prototype.create = function(id) {
     
     //setup input events
     var me = this;
-    //for iPhone OS and Android devices
-    $('#' + id).bind('touchstart', function(e) {
-        if (me.touchstart) {
-            me.prehandleMobileEvent(e);
-            me.touchstart(e);
-        }
-        else
-        if (me.mousedown) {
-            me.prehandleMobileEvent(e);
-            me.mousedown(e);
-        }
-    });
-    $('#' + id).bind('touchmove', function(e) {
-        if (!me.inGesture) {
-            //must duplicate prehandleMobile event so that the default action is performed if not implemented
-            ALT = e.originalEvent.changedTouches.length == 2;
-            if (me.touchmove) {
-                me.prehandleMobileEvent(e);
-                me.touchmove(e);
-            }
-            else
-            if (me.drag) {
-                me.prehandleMobileEvent(e);
-                me.drag(e);
-            }
-        }
-    });
-    $('#' + id).bind('touchend', function(e) {
-        if (me.touchend) {
-            me.prehandleMobileEvent(e);
-            me.touchend(e);
-        }
-        else
-        if (me.mouseup) {
-            me.prehandleMobileEvent(e);
-            me.mouseup(e);
-        }
-    });
-    $('#' + id).bind('gesturestart', function(e) {
-        me.inGesture = true;
-        if (me.gesturestart) {
-            me.prehandleEvent(e);
-            me.gesturestart(e);
-        }
-    });
-    $('#' + id).bind('gesturechange', function(e) {
-        if (e.originalEvent.scale == 1) {
-            me.inGesture = false;
-        }
-        else {
-            if (me.gesturechange) {
-                me.prehandleEvent(e);
-                me.gesturechange(e);
-            }
-        }
-    });
-    $('#' + id).bind('gestureend', function(e) {
-        me.inGesture = false;
-        if (me.gestureend) {
-            me.prehandleEvent(e);
-            me.gestureend(e);
-        }
-    });
     //normal events
     $('#' + id).click(function(e) {
         switch (e.which) {
@@ -294,8 +246,45 @@ Canvas3D.prototype.create = function(id) {
         this.subCreate();
     }
 }
+Person.prototype.isPointIn = function(p, projectionMatrix){
+    var vector = vec3.create([( p.x / window.innerWidth ) * 2 - 1, - ( p.y / window.innerHeight ) * 2 + 1, 0.5 ]);
+    var matrix = mat4.multiply( mat4.makeInvert( mat4.identity([]) ), mat4.makeInvert(projectionMatrix ) );
+    matrix.transform( vector );
+
+    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+    
+//    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+//    var intersects = ray.intersectScene( scene );
+
+    return false;    
+}
+
+Canvas3D.prototype.mousemove = function(e){
+    var min = Infinity;
+    var hovering = null;
+    for (var i = 0, ii = this.family.people.length; i < ii; i++) {
+        this.family.people[i].isHover = false;
+        if (this.family.people[i].isPointIn(e.p, this.projectionMatrix)) {
+            hovering = this.family.people[i];
+        }
+    }
+    ;
+    for (var i = 0, ii = this.family.bonds.length; i < ii; i++) {
+        this.family.bonds[i].isHover = false;
+        var dist = e.p.distance(this.family.bonds[i].getCenter());
+        if (dist < this.specs.bondLength && dist < min) {
+            min = dist;
+            hovering = this.family.bonds[i];
+        }
+    }
+    ;
+    if (hovering != null) {
+        hovering.isHover = true;
+    }
+    this.repaint();
+}
 Canvas3D.prototype.getMolecule = function() {
-    return this.molecule;
+    return this.family;
 }
 Canvas3D.prototype.prehandleEvent = function(e) {
     e.preventDefault();
@@ -318,39 +307,39 @@ function Canvas3D(id, width, height) {
     this.rotationMatrix = mat4.identity([]);
     this.translationMatrix = mat4.identity([]);
     this.lastPoint = null;
-    this.molecule = null;
+    this.family = null;
     this.emptyMessage = null;
     this.inGesture = false;
     return true;
 }
 
 Canvas3D.prototype.afterLoadMolecule = function() {
-    var d = this.molecule.getDimension();
+    var d = this.family.getDimension();
     this.translationMatrix = mat4.translate(mat4.identity([]), [0, 0, -Math.max(d.x, d.y) - 10]);
     this.setupScene();
 }
 Canvas3D.prototype.setViewDistance = function(distance) {
     this.translationMatrix = mat4.translate(mat4.identity([]), [0, 0, -distance]);
 }
-Canvas3D.prototype.repaint = function() {
+Canvas3D.prototype.repaint = function(e) {
     //ready the bits for rendering
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT)
 
     //set up the model view matrix to the specified transformations
     this.gl.modelViewMatrix = mat4.multiply(this.translationMatrix, this.rotationMatrix, []);
 
-    if (this.molecule != null) {
+    if (this.family != null) {
         //render molecule
-        this.molecule.render(this.gl, this.specs);
+        this.family.render(this.gl, this.specs, e);
     }
 }
 Canvas3D.prototype.center = function() {
     var canvas = document.getElementById(this.id);
-    var p = this.molecule.getCenter3D();
+    var p = this.family.getCenter3D();
     var center = new Person('C', 0, 0, 0);
     center.sub3D(p);
-    for (var i = 0, ii = this.molecule.people.length; i < ii; i++) {
-        this.molecule.people[i].add3D(center);
+    for (var i = 0, ii = this.family.people.length; i < ii; i++) {
+        this.family.people[i].add3D(center);
     }
     ;
 }
@@ -426,14 +415,20 @@ Canvas3D.prototype.drag = function(e) {
     else {
         var difx = e.p.x - this.lastPoint.x;
         var dify = e.p.y - this.lastPoint.y;
-        var rotation = mat4.rotate(mat4.identity([]), difx * Math.PI / 180.0, [0, 1, 0]);
-        mat4.rotate(rotation, dify * Math.PI / 180.0, [1, 0, 0]);
+        var rotation;
+        if(Math.abs(difx) > Math.abs(dify)){
+            rotation = mat4.rotate(mat4.identity([]), difx * Math.PI / 180.0, [0, 1, 0]);
+        }
+        else{
+            rotation = mat4.rotate(mat4.identity([]), dify * Math.PI / 180.0, [1, 0, 0]);                            
+        }
         this.rotationMatrix = mat4.multiply(rotation, this.rotationMatrix);
         this.lastPoint = e.p;
         this.repaint();
     }
 }
 Canvas3D.prototype.mousewheel = function(e, delta) {
+//    log(delta);
     mat4.translate(this.translationMatrix, [0, 0, delta]);
     this.repaint();
 }
@@ -462,95 +457,6 @@ Point.prototype.add = function(p) {
 Point.prototype.distance = function(p) {
     return Math.sqrt(Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2));
 }
-Point.prototype.angleForStupidCanvasArcs = function(p) {
-    var dx = p.x - this.x;
-    var dy = p.y - this.y;
-    var angle = 0;
-    // Calculate angle
-    if (dx == 0) {
-        if (dy == 0) {
-            angle = 0;
-        }
-        else
-        if (dy > 0) {
-            angle = Math.PI / 2;
-        }
-        else {
-            angle = 3 * Math.PI / 2;
-        }
-    }
-    else
-    if (dy == 0) {
-        if (dx > 0) {
-            angle = 0;
-        }
-        else {
-            angle = Math.PI;
-        }
-    }
-    else {
-        if (dx < 0) {
-            angle = Math.atan(dy / dx) + Math.PI;
-        }
-        else
-        if (dy < 0) {
-            angle = Math.atan(dy / dx) + 2 * Math.PI;
-        }
-        else {
-            angle = Math.atan(dy / dx);
-        }
-    }
-    while (angle < 0) {
-        angle += Math.PI * 2;
-    }
-    angle = angle % (Math.PI * 2);
-    return angle;
-}
-Point.prototype.angle = function(p) {
-    //y is upside down to account for inverted canvas
-    var dx = p.x - this.x;
-    var dy = this.y - p.y;
-    var angle = 0;
-    // Calculate angle
-    if (dx == 0) {
-        if (dy == 0) {
-            angle = 0;
-        }
-        else
-        if (dy > 0) {
-            angle = Math.PI / 2;
-        }
-        else {
-            angle = 3 * Math.PI / 2;
-        }
-    }
-    else
-    if (dy == 0) {
-        if (dx > 0) {
-            angle = 0;
-        }
-        else {
-            angle = Math.PI;
-        }
-    }
-    else {
-        if (dx < 0) {
-            angle = Math.atan(dy / dx) + Math.PI;
-        }
-        else
-        if (dy < 0) {
-            angle = Math.atan(dy / dx) + 2 * Math.PI;
-        }
-        else {
-            angle = Math.atan(dy / dx);
-        }
-    }
-    while (angle < 0) {
-        angle += Math.PI * 2;
-    }
-    angle = angle % (Math.PI * 2);
-    return angle;
-}
 
 //
 //  Copyright 2009 iChemLabs, LLC.  All rights reserved.
@@ -564,14 +470,7 @@ function Person(name, x, y, z, type) {
     this.y = y ? y : 0;
     this.z = z ? z : 0;
     this.charge = 0;
-    this.coordinationNumber = 0;
-    this.bondNumber = 0;
-    this.angleOfLeastInterference = 0;
-    this.isHidden = false;
     this.name = name;
-    this.isLone = false;
-    this.isSelected = false;
-    this.isOverlap = false;
 
     if (type == 'F') {
         this.color = "#ff0000";
@@ -579,7 +478,7 @@ function Person(name, x, y, z, type) {
     else if(type == 'R'){
         this.color = "#000000";
     }
-    else if(type == 'spouse'){
+    else if(type == 'S'){
         this.color = "#888888";
     }
     else {
@@ -607,7 +506,7 @@ Person.prototype.distance3D = function(p) {
 Person.prototype.render = function(gl, specs) {
     var transform = mat4.translate(gl.modelViewMatrix, [this.x, this.y, this.z], []);
     var radius = specs.atoms_width / 2;
-    mat4.scale(transform, [radius, radius, radius]);
+    var tmp = mat4.scale(transform, [radius, radius, radius]);
     //positions
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.sphereBuffer.vertexPositionBuffer);
     gl.vertexAttribPointer(gl.shader.vertexPositionAttribute, gl.sphereBuffer.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -773,115 +672,6 @@ Family.prototype.getDimension = function() {
     }
     ;
     return new Point(maxX - minX, maxY - minY);
-}
-Family.prototype.check = function() {
-    //find lones
-    for (var i = 0, ii = this.people.length; i < ii; i++) {
-        this.people[i].isLone = false;
-        if (this.people[i].name == 'C') {
-            var counter = 0;
-            for (var j = 0, jj = this.bonds.length; j < jj; j++) {
-                if (this.bonds[j].a1 == this.people[i] || this.bonds[j].a2 == this.people[i]) {
-                    counter++;
-                }
-            }
-            ;
-            if (counter == 0) {
-                this.people[i].isLone = true;
-            }
-        }
-    }
-    //sort
-    this.sortAtomsByZ();
-    this.sortBondsByZ();
-    //setup metadata
-    this.setupMetaData();
-}
-Family.prototype.getAngles = function(a) {
-    var angles = [];
-    for (var i = 0, ii = this.bonds.length; i < ii; i++) {
-        if (this.bonds[i].contains(a)) {
-            angles[angles.length] = a.angle(this.bonds[i].getNeighbor(a));
-        }
-    }
-    ;
-    angles.sort();
-    return angles;
-}
-Family.prototype.getCoordinationNumber = function(bs) {
-    var coordinationNumber = 0;
-    for (var i = 0, ii = bs.length; i < ii; i++) {
-        coordinationNumber += bs[i].bondOrder;
-    }
-    ;
-    return coordinationNumber;
-}
-Family.prototype.getBonds = function(a) {
-    var bonds = [];
-    for (var i = 0, ii = this.bonds.length; i < ii; i++) {
-        if (this.bonds[i].contains(a)) {
-            bonds[bonds.length] = this.bonds[i];
-        }
-    }
-    ;
-    return bonds;
-}
-Family.prototype.sortAtomsByZ = function() {
-    for (var i = 1, ii = this.people.length; i < ii; i++) {
-        var index = i;
-        while (index > 0 && this.people[index].z < this.people[index - 1].z) {
-            var hold = this.people[index];
-            this.people[index] = this.people[index - 1];
-            this.people[index - 1] = hold;
-            index--;
-        }
-    }
-}
-Family.prototype.sortBondsByZ = function() {
-    for (var i = 1, ii = this.bonds.length; i < ii; i++) {
-        var index = i;
-        while (index > 0 && (this.bonds[index].a1.z + this.bonds[index].a2.z) < (this.bonds[index - 1].a1.z + this.bonds[index - 1].a2.z)) {
-            var hold = this.bonds[index];
-            this.bonds[index] = this.bonds[index - 1];
-            this.bonds[index - 1] = hold;
-            index--;
-        }
-    }
-}
-Family.prototype.setupMetaData = function() {
-    for (var i = 0, ii = this.people.length; i < ii; i++) {
-        var a = this.people[i];
-        var bonds = this.getBonds(a);
-        var angles = this.getAngles(a);
-        a.isHidden = bonds.length == 2 && Math.abs(Math.abs(angles[1] - angles[0]) - Math.PI) < Math.PI / 30 && bonds[0].bondOrder == bonds[1].bondOrder;
-        a.angleOfLeastInterference = angleBetweenLargest(angles) % (Math.PI * 2);
-        a.coordinationNumber = this.getCoordinationNumber(bonds);
-        a.bondNumber = bonds.length;
-    }
-    ;
-}
-Family.prototype.scaleToAverageBondLength = function(length) {
-    var avBondLength = this.getAverageBondLength();
-    if (avBondLength != 0) {
-        var scale = length / avBondLength;
-        for (var i = 0, ii = this.people.length; i < ii; i++) {
-            this.people[i].x *= scale;
-            this.people[i].y *= scale;
-        }
-        ;
-    }
-}
-Family.prototype.getAverageBondLength = function() {
-    if (this.bonds.length == 0) {
-        return 0;
-    }
-    var tot = 0;
-    for (var i = 0, ii = this.bonds.length; i < ii; i++) {
-        tot += this.bonds[i].getLength();
-    }
-    ;
-    tot /= this.bonds.length;
-    return tot;
 }
 
 function Cylinder() {
@@ -1231,43 +1021,6 @@ Sphere.prototype.generate = function(gl, radius, latitudeBands, longitudeBands) 
 }
 
 //
-//  Copyright 2009 iChemLabs, LLC.  All rights reserved.
-//
-//  $Revision: 2777 $
-//  $Author: kevin $
-//  $LastChangedDate: 2010-08-12 16:48:33 -0400 (Thu, 12 Aug 2010) $
-//
-function angleBetweenLargest(angles) {
-    if (angles.length == 0) {
-        return 0;
-    }
-    if (angles.length == 1) {
-        return angles[0] + Math.PI;
-    }
-    var largest = 0;
-    var angle = 0;
-    var index = -1;
-    for (var i = 0, ii = angles.length - 1; i < ii; i++) {
-        var dif = angles[i + 1] - angles[i];
-        if (dif > largest) {
-            largest = dif;
-            angle = (angles[i + 1] + angles[i]) / 2;
-            index = i;
-        }
-    }
-    var last = angles[0] + Math.PI * 2 - angles[angles.length - 1];
-    if (last > largest) {
-        angle = angles[0] - last / 2;
-        largest = last;
-        if (angle < 0) {
-            angle += Math.PI * 2;
-        }
-        index = angles.length - 1;
-    }
-    return angle;
-}
-
-//
 //  Copyright 2006-2010 iChemLabs, LLC.  All rights reserved.
 //
 //  $Revision: 2786 $
@@ -1286,16 +1039,4 @@ function supports_canvas_text() {
     var dummy_canvas = document.createElement('canvas');
     var context = dummy_canvas.getContext('2d');
     return typeof context.fillText == 'function';
-}
-
-function alertBrowserIncompatibility() {
-    if (!supports_canvas_text()) {
-        if ($.browser.msie && $.browser.version >= '6') {
-            good = true;
-            alert('ChemDoodle Web Components require Google Chrome Frame to run in Internet Explorer. Please install Google Chrome Frame and then restart your browser.\n\nhttp://code.google.com/chrome/chromeframe/');
-        }
-        if (!good) {
-            alert('ChemDoodle Web Components are best viewed in the following browsers with minimum versions listed. Please use one of the following or update your browser for the best experience.\n\nGoogle Chrome 2+ (Windows)\nApple Safari 4+ (Windows, Mac)\nMozilla Firefox 3.5+ (Windows, Mac, Linux)\nOpera 10.5+ (Windows, Mac, Linux)\nInternet Explorer 6+ (Windows)');
-        }
-    }
 }

@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html xml:lang="en-US" lang="en-US" dir="ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <LINK rel="stylesheet" href="stylesheets/familyTree.css">
+    <title>中华族谱网</title>
+    <script type="text/javascript" src="./javascripts/ChemDoodleWeb-libs.js"></script>
+    <script type="text/javascript" src="./javascripts/family_tree.js"></script>
+    <script type="text/javascript" src="./javascripts/family_tree_lib.js"></script>
+    <script type="text/javascript" src="./javascripts/family_tree_gen.js"></script>
+    <script type="text/javascript">
+        function log(msg) {
+            var val = $("#log").val() + "\n";
+            $("#log").val(val + msg);
+        }
+        function generate(){
+            var familyInJson = eval("("+ $('#family').val() +")") ;
+            makeTree('canvas', familyInJson);
+        }
+    </script>
+</head>
+<body>
+<div id="wrapper">
+    <div id="doc">
+        <div id="main-feature" class="latest-version">
+            <h2><a href="index.html">Chinese Family Tree</a></h2>
+
+            <p>多谢您的支持。如果您喜欢，不要忘了给我投票哦!</p>
+
+        </div>
+        <div id="main-content">
+            <h3>许多的功能等待开发中，敬请期待</h3>
+            <ul>
+                <li>在族谱上现实每个人的名字</li>
+                <li>通过点击可以显示配偶的族谱</li>
+                <li>创建Rails应用，可以保存族谱信息</li>
+                <li>族谱的合并功能</li>
+                <li>在一个页面现实多个联姻家族的族谱</li>
+                <li>...</li>
+            </ul>
+
+        </div>
+        <div id="sidebar">
+            <div class="sub-feature" id="connect">
+                <h3>族谱功能演示</h3>
+                <ul class="link">
+                    <li><a href="./moreFunctions.html">中国相声界族谱</a></li>
+                    <li><a href="./moreFunctions.html">族谱合并</a></li>
+                    <li><a href="./moreFunctions.html">多个族谱同时显示</a></li>
+                    <li><a href="./moreFunctions.html">点击查看更多功能</a></li>
+                </ul>
+            </div>
+            <div class="sub-feature" id="personalize">
+                <div id="personalize-thunderbird">
+                    <h3>想创建自己的族谱吗</h3>
+
+                    <p>您可以在线创建自己的族谱</p>
+                    <ul class="link">
+                        <li><a href="./myFamilyTree.html">点击创建自己的族谱</a></li>
+                    </ul>
+
+                </div>
+            </div>            
+        </div>
+
+        <!--<p id="sub-links">-->
+            <!--如果对这个创意感兴趣，欢迎一起交流(张晓庆@Thoughtworks)-->
+        <!--</p>-->
+    </div>
+</div>
+</body>
+</html>
