@@ -94,6 +94,7 @@ body, h1, h2, h3, h4, h5, h6 {
 
 .sub-feature h3 {
     font-size: 20px;
+    color: gray;
     letter-spacing: -0.01em;
     line-height: 1.1;
     margin: 0;
@@ -108,6 +109,9 @@ ul {
 #connect.sub-feature ul.link li a {
     padding-left: 40px;
 }
+#personalize a {
+    color:red;
+}
 
 #personalize {
 /*background: url("/img/firefox/3.6/firstrun/rockyourfirefox/background.png") no-repeat scroll right top #E9F2F5;*/
@@ -121,12 +125,6 @@ ul {
     margin-right: 45px;
 }
 
-.sub-feature h3 {
-    font-size: 20px;
-    letter-spacing: -0.01em;
-    line-height: 1.1;
-    margin: 0;
-}
 
 #personalize p {
     color: #555555;
