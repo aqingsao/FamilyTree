@@ -1,0 +1,176 @@
+body, h1, h2, h3, h4, h5, h6 {
+    color: #555555;
+    font-family: MetaWebPro-Bold, sans-serif;
+}
+
+#wrapper {
+    min-width: 950px;
+}
+
+#doc {
+    margin: auto;
+    position: relative;
+    text-align: left;
+    width: 950px;
+    min-width: 750px;
+    z-index: 1;
+}
+
+#main-feature{
+    padding-bottom: 20px;
+}
+
+#main-feature h2 {
+    float: left;
+    font-size: 200%;
+    margin: 0;
+    padding: 0;
+}
+#main-feature h2 a:link, #main-feature h2 a:active, #main-feature h2 a:visited, #main-feature h2 a:hover{
+    text-decoration:none;
+}
+
+#main-feature h2 {
+    color: #888888;
+    font-size: 360%;
+    margin: 0 0px 0 0px;
+}
+
+#main-feature p {
+    color: #69645C;
+    font-family: MetaWebPro-Book, sans-serif;
+    font-size: 20px;
+    letter-spacing: -0.015em;
+    line-height: 1.24;
+    margin: 25px 75px 10px 528px;
+}
+
+#main-feature #title-logo {
+    display: block;
+    height: 130px;
+    margin: 0 15px 15px 0;
+}
+
+#main-content {
+    clear: both;
+    font-size: 15px;
+    margin: 0px 15px 25px 0;
+    width: 635px;
+    height: 400px;
+    float: left;
+    display: block;
+    position: relative;
+}
+#main-content #canvas{
+    -moz-border-radius: 10px 10px 10px 10px;
+    border: 1px solid #F9AE64;
+    width: 635px;
+    height: 380px;
+}
+
+#main-content #helper{
+    color: #aaaaaa;
+}
+#sidebar {
+    margin-right: 0;
+    width: 285px;
+    display: inline;
+    float: left;
+    font-size: 110%;
+    position: relative;
+}
+
+#connect.sub-feature {
+/*-moz-box-shadow: none;*/
+    border-color: transparent;
+    min-height: 172px;
+    position: relative;
+    -moz-border-radius: 6px 6px 6px 6px;
+    border: 1px solid #CDCDCD;
+    margin: 0 0 15px;
+    padding: 10px 15px 17px;
+    width: 250px;
+}
+
+.sub-feature h3 {
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    margin: 0;
+}
+
+ul {
+    left: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#connect.sub-feature ul.link li a {
+    padding-left: 40px;
+}
+
+#personalize {
+/*background: url("/img/firefox/3.6/firstrun/rockyourfirefox/background.png") no-repeat scroll right top #E9F2F5;*/
+}
+
+#personalize #personalize-rockyourfirefox {
+    display: block;
+}
+
+#personalize h3 {
+    margin-right: 45px;
+}
+
+.sub-feature h3 {
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    margin: 0;
+}
+
+#personalize p {
+    color: #555555;
+    font-family: MetaWebPro-Book, sans-serif;
+    font-size: 14px;
+    line-height: 1.2;
+    margin: 5px 75px 10px 0;
+}
+
+#personalize ul.link {
+    bottom: 15px;
+    left: 15px;
+}
+
+ul.link li {
+    -moz-border-radius: 4px 4px 4px 4px;
+    -moz-box-shadow: 0 2px rgba(0, 0, 0, 0.05), 0 -2px rgba(0, 0, 0, 0.05) inset; /*background: -moz-linear-gradient(center top, #FFFFFF 50%, #FCFCFC 0%) repeat scroll 0 0 #FFFFFF;*/
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    line-height: 24px;
+    margin: 10px 0 0;
+    padding: 0;
+}
+
+li {
+    list-style: none outside none;
+}
+
+#personalize ul.link a {
+    width: 200px;
+}
+
+#sub-links {
+    clear: both;
+    font-family: MetaWebPro-Book, sans-serif;
+    font-size: 14px;
+    text-align: center;
+}
+
+#sub-links a {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+a:link, a:visited, a:hover, a:active {
+    color: #555555;
+    text-decoration: underline;
+}
